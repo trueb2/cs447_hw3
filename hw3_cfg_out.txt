@@ -1,0 +1,100 @@
+########################################
+### Sentence 1: 0 parses
+### <There is no asbestos in our products now .>
+########################################
+########################################
+### Sentence 2: 0 parses
+### <It has no bearing on our work force today .>
+########################################
+########################################
+### Sentence 3: 0 parses
+### <Champagne and dessert followed .>
+########################################
+########################################
+### Sentence 4: 0 parses
+### <But Mr. Barnum called that a worst-case scenario .>
+########################################
+########################################
+### Sentence 5: 0 parses
+### <All came from Cray Research .>
+########################################
+########################################
+### Sentence 6: 0 parses
+### <No price for the new shares has been set .>
+########################################
+########################################
+### Sentence 7: 0 parses
+### <The computers were crude by today 's standards .>
+########################################
+########################################
+### Sentence 8: 0 parses
+### <There were many pioneer PC contributors .>
+########################################
+########################################
+### Sentence 9: 0 parses
+### <Esso said the Whiting field started production Tuesday .>
+########################################
+########################################
+### Sentence 10: 0 parses
+### <The rest went to investors from France and Hong Kong .>
+########################################
+########################################
+### Sentence 11: 0 parses
+### <They fell into oblivion after the 1929 crash .>
+########################################
+########################################
+### Sentence 12: 0 parses
+### <Factory payrolls fell in September .>
+########################################
+########################################
+### Sentence 13: 0 parses
+### <It 's imaginative and often funny .>
+########################################
+########################################
+### Sentence 14: 0 parses
+### <South Korea has different concerns .>
+########################################
+########################################
+### Sentence 15: 0 parses
+### <And the nose on Mr. Courter 's face grows .>
+########################################
+########################################
+### Sentence 16: 0 parses
+### <Her immediate predecessor suffered a nervous breakdown .>
+########################################
+########################################
+### Sentence 17: 0 parses
+### <Pressures began to build .>
+########################################
+########################################
+### Sentence 18: 0 parses
+### <But Learning Materials matched on 66.5 of 69 subskills .>
+########################################
+########################################
+### Sentence 19: 0 parses
+### <Viacom denies it 's using pressure tactics .>
+########################################
+########################################
+### Sentence 20: 0 parses
+### <The business had been handled by VanSant Dugdale , Baltimore .>
+########################################
+########################################
+### Sentence 21: 0 parses
+### <Terms were n't disclosed .>
+########################################
+########################################
+### Sentence 22: 0 parses
+### <France can boast the lion 's share of high-priced bottles .>
+########################################
+########################################
+### Sentence 23: 0 parses
+### <The president understood but did n't agree despite overwhelming political pressure .>
+########################################
+########################################
+### Sentence 24: 0 parses
+### <Stock prices rose fractionally in moderate trading .>
+########################################
+########################################
+### Sentence 25: 0 parses
+### <They operate ships and banks .>
+########################################
