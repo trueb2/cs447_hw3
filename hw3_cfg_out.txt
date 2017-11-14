@@ -1,19 +1,31 @@
 ########################################
-### Sentence 1: 0 parses
+### Sentence 1: 1 parses
 ### <There is no asbestos in our products now .>
 ########################################
+Parse 1
+Tree('TOP', [Tree('S', [Tree('ABCD', [Tree('A', [Tree('B', [Tree('EX', ['There']), Tree('VBZ', ['is'])]), Tree('C', [Tree('DT', ['no']), Tree('NN', ['asbestos'])]), Tree('D', [Tree('IN', ['in']), Tree('PRPX', ['our'])]), Tree('NNS', ['products']), Tree('RB', ['now'])])]), Tree('FS', ['.'])])])
+-------------------------
 ########################################
-### Sentence 2: 0 parses
+### Sentence 2: 1 parses
 ### <It has no bearing on our work force today .>
 ########################################
+Parse 1
+Tree('TOP', [Tree('S', [Tree('ABCD', [Tree('E', [Tree('PRP', ['It']), Tree('VBZ', ['has']), Tree('C', [Tree('DT', ['no']), Tree('NN', ['bearing'])]), Tree('D', [Tree('IN', ['on']), Tree('PRPX', ['our'])]), Tree('NOUNS', [Tree('NN', ['work']), Tree('NOUNS', [Tree('NN', ['force']), Tree('NOUNS', [Tree('NN', ['today'])])])])])]), Tree('FS', ['.'])])])
+-------------------------
 ########################################
-### Sentence 3: 0 parses
+### Sentence 3: 1 parses
 ### <Champagne and dessert followed .>
 ########################################
+Parse 1
+Tree('TOP', [Tree('S', [Tree('ABCD', [Tree('G', [Tree('F', [Tree('NN', ['Champagne']), Tree('CC', ['and']), Tree('F', [Tree('NN', ['dessert'])])]), Tree('VBD', ['followed'])])]), Tree('FS', ['.'])])])
+-------------------------
 ########################################
-### Sentence 4: 0 parses
+### Sentence 4: 1 parses
 ### <But Mr. Barnum called that a worst-case scenario .>
 ########################################
+Parse 1
+Tree('TOP', [Tree('S', [Tree('ABCD', [Tree('H', [Tree('CC', ['But']), Tree('NOUNS', [Tree('NNP', ['Mr.']), Tree('NOUNS', [Tree('NNP', ['Barnum'])])]), Tree('VBD', ['called']), Tree('IN', ['that']), Tree('DT', ['a']), Tree('JJ', ['worst-case']), Tree('NOUNS', [Tree('NN', ['scenario'])])])]), Tree('FS', ['.'])])])
+-------------------------
 ########################################
 ### Sentence 5: 0 parses
 ### <All came from Cray Research .>
