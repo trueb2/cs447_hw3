@@ -128,16 +128,13 @@ class Cell:
         self.items = {}
 
     def addItem(self, item):
-        # Add an Item to this cell
-        pass
+        self.items[item.label] = item
 
     def getItem(self, label):
-        # Return the cell Item with the given label
-        pass
+        return self.items[item.label]
 
     def getItems(self):
-        # Return the items in this cell
-        pass
+        return [self.items[label] for label in self.items]
 
 '''
 A Chart stores a Cell for every possible (contiguous) span of a sentence
@@ -149,17 +146,18 @@ Your task is to implement the stubs provided in this class
 class Chart:
 
     def __init__(self, sentence):
-        # Initialize the chart, given a sentence
-        pass
+        self.cells = {}
+        self.n = len(sentence)
+        self.S = (self.n, self.n)
+        for i in range(self.n + 1):
+            for j in range(self.n + 1):
+                self.cells[(i,j)] = Cell()
 
     def getRoot(self):
-        # Return the item from the top cell in the chart with
-        # the label TOP
-        pass
+        return self.cells[self.S]
 
     def getCell(self, i, j):
-        # Return the chart cell at position i, j
-        pass
+        return self.cells[(i,j)]
 
 '''
 A PCFG stores grammatical rules (with probabilities), and can be used to
@@ -170,14 +168,9 @@ produce a Viterbi parse for a sentence if one exists
 class PCFG:
 
     def __init__(self, grammarFile, debug=False):
-        # in ckyRules, keys are the rule's RHS (the rule's children, stored in
-        # a tuple), and values are the parent categories
         self.ckyRules = {}
-        self.debug = debug                  # boolean flag for debugging
-        # reads the probabilistic rules for this grammar
+        self.debug = debug
         self.readGrammar(grammarFile)
-        # checks that the grammar at least matches the start symbol defined at
-        # the beginning of this file (TOP)
         self.topCheck()
 
     '''
@@ -192,8 +185,7 @@ class PCFG:
                 # reminder, we're using log probabilities
                 prob = math.log(float(raw[0]))
                 parent = raw[1]
-                children = raw[
-                    3:]   # Note: here, children is a list; below, rule.children() is a tuple
+                children = raw[3:]
                 rule = Rule.createRule(prob, parent, children)
                 if rule.children() not in self.ckyRules:
                     self.ckyRules[rule.children()] = set([])
@@ -221,8 +213,50 @@ class PCFG:
     '''
 
     def CKY(self, sentence):
-        # dummy return value:
-        return InternalItem("Implement your CKY algorithm!", float('-inf'), ())
+        # func probabilistic-CKY(words, grammar) returns most
+        # probabilistic parse and its probability
+        words = sentence
+        grammar = self.ckyRules
+        chart = Chart(sentence)
+        back = {}
+
+        # i: rows, j: cols
+        for j in range(1, len(words)):
+            # Fill leaves on diagonals
+            for k in grammar:
+                if (words[j],) == grammar[k].children:
+                    char.getCell(j-1,j).addItem(LeftItem(words[j]))
+            # Move right through the columns and Up through the rows
+            for i in reversed(range(j - 2)):
+                for k in range(i + 1, j):
+                    for R in grammar:
+                        # Check if BinaryRule
+                        if type(R) is UnaryRule:
+                            continue
+
+                        # Check if table[i,k,B] > 0
+                        B_cell = chart.getCell(i,k)
+                        t_B = B_cell.getItem(R.children[0]).prob
+                        if t_B == float('-inf'):
+                            continue
+
+                        # Check if table[k,j,C] > 0
+                        C_cell = chart.getCell(k,j)
+                        t_C = C_cell.getItem(R.children[1]).prob
+                        if t_C == float('-inf'):
+                            continue
+
+                        # Check if table[i,j,A] < P (A -> BC) * table[i,j,B] * table[i,j,C]
+                        A_cell = chart.getCell(i,j)
+                        item = A_cell.getItem(R.parent)
+                        t_A_ = math.log(R.prob) + t_B + t_C
+                        if item.prob < t_A_:
+                            item.prob = t_A_
+                            back[(i,j,R.parent)] = (k, *R.children)
+
+        print(back)
+        return TOP
+
 
 if __name__ == "__main__":
     pcfg = PCFG('toygrammar.pcfg')
