@@ -30,9 +30,6 @@ class Rule:
         return ()
 
     def __repr__(self):
-        return self.__str__()
-
-    def __str__(self):
         return "%s -> %s" % (self.parent, self.children())
 
 
@@ -48,7 +45,7 @@ class UnaryRule(Rule):
 
     # Returns a singleton (tuple) containing the rule's child
     def children(self):
-        return (self.child,)  # note the comma; (self.child) is not a tuple
+        return self.child,  # note the comma; (self.child) is not a tuple
 
 
 '''
@@ -64,7 +61,7 @@ class BinaryRule(Rule):
 
     # Returns a pair (tuple) containing the rule's children
     def children(self):
-        return (self.leftChild, self.rightChild)
+        return self.leftChild, self.rightChild
 
 
 '''
@@ -77,6 +74,9 @@ class Item:
         self.label = label
         self.prob = prob
         self.numParses = numParses
+
+    def __repr__(self):
+        return self.toString()
 
     # Returns the node's label
     def toString(self):
@@ -131,17 +131,26 @@ Your task is to implement the stubs provided in this class
 class Cell:
     def __init__(self):
         self.items = {}
+        self.max_label = None
+        self.max_prob = float('-inf')
 
     def addItem(self, item):
+        if item.prob > self.max_prob:
+            self.max_label = item.label
+            self.max_prob = item.prob
         self.items[item.label] = item
 
     def getItem(self, label):
-        if label not in self.items:
-            self.items[label] = InternalItem(label, float('-inf'))
         return self.items[label]
 
     def getItems(self):
         return [self.items[label] for label in self.items]
+
+    def getNumParses(self):
+        return sum([self.items[label].numParses for label in self.items])
+
+    def __repr__(self):
+        return str(self.getItems())
 
 
 '''
@@ -153,18 +162,23 @@ Your task is to implement the stubs provided in this class
 
 class Chart:
     def __init__(self, sentence):
-        self.cells = {}
+        # Initialize the chart, given a sentence
+        self.chart = {}
+
+        # Fill the chart with all the cells that we will need
         self.n = len(sentence)
-        self.S = (self.n, self.n)
-        for i in range(self.n + 1):
-            for j in range(i, self.n + 1):
-                self.cells[(i, j)] = Cell()
+        for i in range(self.n):
+            for j in range(i, self.n):
+                self.chart[(i, j)] = Cell()
+
+        # Define the root
+        self.root = (0, self.n - 1)
 
     def getRoot(self):
-        return self.cells[self.S]
+        return self.chart[self.root]
 
     def getCell(self, i, j):
-        return self.cells[(i, j)]
+        return self.chart[(i, j)]
 
 
 '''
@@ -175,9 +189,14 @@ produce a Viterbi parse for a sentence if one exists
 
 class PCFG:
     def __init__(self, grammarFile, debug=False):
+        # in ckyRules, keys are the rule's RHS (the rule's children, stored in
+        # a tuple), and values are the parent categories
         self.ckyRules = {}
-        self.debug = debug
+        self.debug = debug  # boolean flag for debugging
+        # reads the probabilistic rules for this grammar
         self.readGrammar(grammarFile)
+        # checks that the grammar at least matches the start symbol defined at
+        # the beginning of this file (TOP)
         self.topCheck()
 
     '''
@@ -192,14 +211,11 @@ class PCFG:
                 # reminder, we're using log probabilities
                 prob = math.log(float(raw[0]))
                 parent = raw[1]
-                children = raw[3:]
+                children = raw[3:]  # Note: here, children is a list; below, rule.children() is a tuple
                 rule = Rule.createRule(prob, parent, children)
                 if rule.children() not in self.ckyRules:
                     self.ckyRules[rule.children()] = set([])
                 self.ckyRules[rule.children()].add(rule)
-        print("???????????????????????????????????????")
-        print(self.ckyRules)
-        print("???????????????????????????????????????")
 
     '''
     Checks that the grammar at least matches the start symbol (TOP)
@@ -223,50 +239,70 @@ class PCFG:
     '''
 
     def CKY(self, sentence):
-        # func probabilistic-CKY(words, grammar) returns most
-        # probabilistic parse and its probability
-        words = sentence
-        grammar = self.ckyRules
+        # Initialize a chart
         chart = Chart(sentence)
-        back = {}
 
-        # i: rows, j: cols
-        for j in range(1, len(words)):
-            # Fill leaves on diagonals
-            chart.getCell(j - 1, j).addItem(LeafItem(words[j]))
+        # Fill the diagonals with words
+        self.assign_diagonal(chart, sentence)
 
-            # Move right through the columns and Up through the rows
-            for i in reversed(range(j - 2)):
-                for k in range(i + 1, j):
-                    for children in grammar:
-                        # Check if BinaryRule
-                        if len(children) == 1:
-                            continue
+        # Iterate from left to right over columns
+        for j in range(chart.n):  # j goes from 1 to n
+            for i in reversed(range(j)):  # i goes from j-1 to 0
+                # Get the target cell for these labels
+                cell = chart.getCell(i, j)
 
-                        # Check if table[i,k,B] > 0
-                        B_cell = chart.getCell(i, k)
-                        t_B = B_cell.getItem(children[0]).prob
-                        if t_B == float('-inf'):
-                            continue
+                # Consider possible parses
+                for k in range(i, j):
+                    # Get B C productions from chart
+                    left = chart.getCell(i, k)
+                    right = chart.getCell(k+1, j)
 
-                        # Check if table[k,j,C] > 0
-                        C_cell = chart.getCell(k, j)
-                        t_C = C_cell.getItem(children[1]).prob
-                        if t_C == float('-inf'):
-                            continue
+                    # Consider all A where A -> left right
+                    for leftItem in left.getItems():
+                        for rightItem in right.getItems():
+                            rhs = (leftItem.label, rightItem.label)
+                            if rhs in self.ckyRules:
+                                for rule in self.ckyRules[rhs]:
+                                    internal_item = InternalItem(rule.parent, rule.prob + leftItem.prob + rightItem.prob)
+                                    internal_item.numParses = leftItem.numParses * rightItem.numParses
+                                    internal_item.children = (left, right, rule.children())
+                                    cell.addItem(internal_item)
 
-                        for rule in grammar[children]:
-                            # Check if table[i,j,A] < P (A -> BC) * table[i,j,B] * table[i,j,C]
-                            A_cell = chart.getCell(i, j)
-                            item = A_cell.getItem(rule.parent)
-                            t_A_ = math.log(rule.prob) + t_B + t_C
-                            if item.prob < t_A_:
-                                item.prob = t_A_
-                                back[(i, j, rule.parent)] = (k, *children)
+        # Each Item's children are the cells that could produce that InternalItem
+        top_cell = chart.getRoot()
+        top_item = top_cell.getItem(top_cell.max_label)
+        productions = top_item.children[2]
+        top_item.children = self.backtrack(top_item.children[0], productions[0]), self.backtrack(top_item.children[1], productions[1])
+        TOP = InternalItem('TOP', top_item.prob, (top_item,))
+        TOP.numParses = top_item.numParses
 
-        print(chart)
-        return None
+        return TOP #, top_item.prob, top_item.children
 
+    def assign_diagonal(self, chart, sentence):
+        """
+        Fills the diagonal of the chart with the leaf items for each word in the sentence
+        and the internal item for the word's production rule in the grammar
+
+        :param chart:
+        :param sentence:
+        :return: None
+        """
+        for i, w in enumerate(sentence):
+            cell = chart.getCell(i, i)
+
+            # Add an InternalItem for the probability of producing word
+            for rule in self.ckyRules[(w,)]:
+                internal_item = InternalItem(rule.parent, rule.prob)
+                internal_item.numParses = 1
+                internal_item.children = LeafItem(w),
+                cell.addItem(internal_item)
+
+    def backtrack(self, cell, label):
+        item = cell.getItem(label)
+        if type(item.children[0]) != LeafItem:
+            productions = item.children[2]
+            item.children = self.backtrack(item.children[0], productions[0]), self.backtrack(item.children[1], productions[1])
+        return item
 
 if __name__ == "__main__":
     pcfg = PCFG('toygrammar.pcfg')
