@@ -54,4 +54,23 @@ if __name__ == "__main__":
                 out.write(p)
                 out.write(pformat(t))
                 out.write("\n-------------------------\n")
-    
+
+
+
+"""
+S -> ABCD FS
+ABCD -> A | E | G | H
+
+B -> EX VBZ
+C -> DT NN | NN
+D -> IN PRPX
+A -> B C D NNS RB
+
+NOUNS -> NN NOUNS | NNP NOUNS | NN | NNP
+E -> PRP VBZ C D NOUNS
+
+F -> NN | NN CC F
+G -> F VBD
+
+H -> CC NOUNS VBD IN DT JJ NOUNS
+"""
